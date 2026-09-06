@@ -1,3 +1,13 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root { font-family: Inter, ui-sans-serif, system-ui, sans-serif; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 320px; background: #080c14; }
+button, input, select { min-height: 42px; }
+.panel { @apply rounded-xl border border-[#1E2636] bg-[#0C111C] p-4 sm:p-5; }
+.section-title { @apply text-xs font-semibold tracking-widest uppercase text-[#F0A500] mb-3; }
+.hint { @apply text-xs text-[#8A93A6] mb-4 leading-relaxed; }
+.control { min-height: 42px; }
+.primary { @apply w-full rounded-md bg-[#2563EB] hover:bg-[#1D4ED8] disabled:opacity-50 text-white font-semibold py-3 transition-colors; }

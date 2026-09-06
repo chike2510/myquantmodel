@@ -54,7 +54,10 @@ export async function fetchQuote(symbol) {
   if (data.status === 'error') throw new Error(`Twelve Data error: ${data.message}`);
   return {
     price: parseFloat(data.close),
-    timestamp: data.timestamp ? new Date(data.timestamp * 1000).toISOString() : new Date().toISOString(),
+    timestamp: data.timestamp ? new Date(data.timestamp * 1000).toISOString() : null,
+    lastQuoteAt: data.last_quote_at ? new Date(data.last_quote_at * 1000).toISOString() : null,
+    isMarketOpen: data.is_market_open ?? null,
+    raw: data,
     source: 'Twelve Data',
   };
 }

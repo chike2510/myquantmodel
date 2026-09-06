@@ -36,12 +36,19 @@ a specific model/alias enabled in your workspace.
 
 **Working now:**
 - Live OHLC candles + live quote (Twelve Data free tier)
+- Server-side Twelve Data proxy with private `TWELVEDATA_API_KEY`
 - All indicator math (RSI, EMAs, ATR, ADX, VWAP, swings, prev-day high/low, momentum, volatility percentile)
+- Timestamp-aware previous-day levels, session context, liquidity-sweep and breakout/retest observations
 - Regime classification (deterministic thresholds)
 - Setup scoring + the hard TRADE/WAIT/NO_TRADE/STOP_TRADING_TODAY gate
+- Verified evidence states for macro, cross-market, entry quality, and liquidity/session inputs
 - Position sizing from stop distance + risk tier
+- Entry zone, stop/invalidation, two targets, expected move, and expected R output
 - Daily loss stop enforcement (-2%)
+- Persistent account and evidence settings in the browser
+- Competition mode framing and score-contribution audit
 - Chart rendered from the same data feed as the math
+- EMA/VWAP/trade-plan overlays on the chart
 
 **Deliberately manual inputs (not automated, to avoid fabricating data):**
 - Macro score, cross-market score, entry quality, liquidity/session — you fill these in from
@@ -58,8 +65,8 @@ a specific model/alias enabled in your workspace.
   small backend table if you want that to persist across sessions.
 - Economic calendar / news integration: could add Serper.dev (you're already using it in edgex) or
   a paid TradingEconomics/FMP calendar endpoint to replace the manual macro-score input.
-- Free Twelve Data tier is 8 req/min — fine for 1H/4H, will need a paid tier or caching layer for
-  smooth 5M polling across all 10 symbols.
+- Free Twelve Data tier is 8 req/min — fine for occasional 1H/4H analysis, but smooth 5M polling
+  across all 10 symbols requires caching, request budgeting, or a higher plan.
 
 ## Compliance note
 
