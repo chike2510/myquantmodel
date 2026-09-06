@@ -1,4 +1,4 @@
-// Vercel serverless function. Keeps the Anthropic API key server-side.
+// Vercel serverless function. Keeps the Experiential Labs API key server-side.
 // The LLM here is NOT allowed to change any number or the TRADE/WAIT/NO_TRADE
 // decision — those arrive already computed from the deterministic engine.
 // It only writes the qualitative sections (WHY, MACRO, CROSS-MARKET, INVALIDATION note).
@@ -23,23 +23,29 @@ incomplete, say so plainly rather than papering over it. Output strict JSON with
   const userPrompt = `Computed analysis:\n${JSON.stringify(computed, null, 2)}\n\nMacro context:\n${macroContext || 'none supplied'}\n\nCross-market context:\n${crossMarketContext || 'none supplied'}`;
 
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    const baseUrl = (process.env.EXPERIENTIAL_BASE_URL || 'https://api.experientiallabs.ai/v1').replace(/\/$/, '');
+    const response = await fetch(`${baseUrl}/chat/completions`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': process.env.ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01',
+        'Authorization': `Bearer ${process.env.EXPERIENTIAL_API_KEY}`,
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
+        model: process.env.EXPERIENTIAL_MODEL || 'gpt-4o-mini',
         max_tokens: 800,
-        system: systemPrompt,
-        messages: [{ role: 'user', content: userPrompt }],
+        response_format: { type: 'json_object' },
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt },
+        ],
       }),
     });
 
     const data = await response.json();
-    const text = data.content?.find(b => b.type === 'text')?.text ?? '{}';
+    if (!response.ok) {
+      throw new Error(data.error?.message || `Experiential Labs request failed (${response.status})`);
+    }
+    const text = data.choices?.[0]?.message?.content ?? '{}';
     const clean = text.replace(/```json|```/g, '').trim();
     const narrative = JSON.parse(clean);
 

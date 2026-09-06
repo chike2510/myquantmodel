@@ -13,7 +13,7 @@ src/engine/setupScore.js     → weighted setup score, TRADE/WAIT/NO_TRADE/STOP 
 src/api/marketData.js        → Twelve Data OHLC + quote fetch
 src/components/LiveChart.jsx → lightweight-charts, fed from the same candles as the indicator engine
 src/components/Dashboard.jsx → orchestration + output rendering
-api/narrative.js             → Vercel serverless fn — Claude writes WHY/MACRO/CROSS-MARKET prose only
+api/narrative.js             → Vercel serverless fn — Experiential Labs writes WHY/MACRO/CROSS-MARKET prose only
 ```
 
 ## Setup
@@ -21,12 +21,14 @@ api/narrative.js             → Vercel serverless fn — Claude writes WHY/MACR
 ```bash
 npm install
 cp .env.example .env
-# fill in VITE_TWELVEDATA_API_KEY and ANTHROPIC_API_KEY
+# fill in VITE_TWELVEDATA_API_KEY and EXPERIENTIAL_API_KEY
 npm run dev
 ```
 
 Deploy to Vercel as-is — `/api/narrative.js` is picked up automatically as a serverless function.
-Set both env vars in the Vercel project settings (ANTHROPIC_API_KEY as a server-only var).
+Set `VITE_TWELVEDATA_API_KEY` and the server-only `EXPERIENTIAL_API_KEY` in Vercel project settings.
+The narrative endpoint uses Experiential Labs' OpenAI-compatible gateway. Set
+`EXPERIENTIAL_MODEL` to a model or alias enabled in your workspace; the default is `gpt-4o-mini`.
 
 ## What's real vs. what you still need to wire up
 
