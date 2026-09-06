@@ -21,7 +21,7 @@ api/narrative.js             → Vercel serverless fn — Experiential Labs writ
 ```bash
 npm install
 cp .env.example .env
-# fill in TWELVEDATA_API_KEY and EXPERIENTIAL_API_KEY
+# fill in TWELVEDATA_API_KEY and EXPERIENTIAL_API_KEY; FINNHUB_API_KEY is optional
 npm run dev
 ```
 
@@ -49,22 +49,23 @@ a specific model/alias enabled in your workspace.
 - Competition mode framing and score-contribution audit
 - Chart rendered from the same data feed as the math
 - EMA/VWAP/trade-plan overlays on the chart
+- Optional Finnhub economic-calendar and general-news context via `FINNHUB_API_KEY`
+- Cross-market quote snapshots through the Twelve Data proxy
+- Transparent local walk-forward historical check over the fetched candle window
+- Rate-limited technical shortlist scanner for three primary instruments
 
-**Deliberately manual inputs (not automated, to avoid fabricating data):**
-- Macro score, cross-market score, entry quality, liquidity/session — you fill these in from
-  an actual economic calendar / news check / correlated-asset glance. No free reliable API
-  exists for economic calendar data, so the tool refuses to guess at these rather than invent them.
-- Estimated probability and target R:R — you supply these based on your own read of the setup;
-  wiring a real probability model (e.g. historical backtest of similar setups) is a good next step.
+**Still requiring human verification:**
+- Macro score, cross-market score, entry quality, and liquidity/session remain explicit evidence inputs.
+  The optional calendar, news, and cross-market snapshots inform the review but do not silently mark
+  a factor as verified or fabricate a score.
+- Estimated probability and target R:R remain user inputs. The local historical check is a transparent
+  diagnostic sample, not a calibrated probability model or a guarantee of future performance.
 
 **Known gaps / next steps:**
 - NAS100/US30/GER30 symbol mapping in `marketData.js` uses index proxies (NDX/DJI/DAX) — verify
   these match your broker's CFD pricing closely enough before trusting them, or swap in a CFD-specific
   data vendor.
-- No persistence yet — daily P&L and leaderboard state reset on refresh. Add local storage or a
-  small backend table if you want that to persist across sessions.
-- Economic calendar / news integration: could add Serper.dev (you're already using it in edgex) or
-  a paid TradingEconomics/FMP calendar endpoint to replace the manual macro-score input.
+- Finnhub context requires the optional `FINNHUB_API_KEY` environment variable.
 - Free Twelve Data tier is 8 req/min — fine for occasional 1H/4H analysis, but smooth 5M polling
   across all 10 symbols requires caching, request budgeting, or a higher plan.
 

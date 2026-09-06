@@ -266,3 +266,22 @@ The application has now been upgraded in the following areas:
 | Private data key | Twelve Data remains behind `/api/market-data` and uses the server-only `TWELVEDATA_API_KEY`. |
 
 The remaining product-level work is primarily external-data integration and validation: connecting a source-backed economic calendar and news provider, implementing automated cross-market relationships, adding a calibrated historical probability model, and adding a multi-symbol scanner that respects the Twelve Data free-tier request budget. These should be added only with explicit source, timestamp, caching, and rate-limit handling.
+
+
+## Second implementation update
+
+The remaining integrations now have working application paths:
+
+- `/api/context` optionally retrieves Finnhub economic-calendar events and general-news headlines when `FINNHUB_API_KEY` is configured.
+- The Twelve Data proxy now supports bounded multi-symbol quote snapshots for cross-market review.
+- The dashboard displays the number of cross-market quotes, calendar events, and news headlines received.
+- A transparent local walk-forward diagnostic estimates historical trend-setup hit rate and sample expectancy from the fetched candles. It is explicitly labeled as a diagnostic, not a calibrated probability guarantee.
+- A technical shortlist scanner analyzes three primary instruments with three Twelve Data candle calls, then ranks directional technical scores. It does not mark macro or cross-market evidence as verified and is rate-limit conscious for the free plan.
+
+To enable calendar and news context, add the optional server-side variable:
+
+```text
+FINNHUB_API_KEY=your_finnhub_key
+```
+
+The application intentionally keeps external context separate from the deterministic gate. Retrieved headlines and events inform the user, but they do not automatically become a verified macro or cross-market score without an explicit evidence review.

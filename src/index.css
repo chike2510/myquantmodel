@@ -11,3 +11,4 @@ button, input, select { min-height: 42px; }
 .hint { @apply text-xs text-[#8A93A6] mb-4 leading-relaxed; }
 .control { min-height: 42px; }
 .primary { @apply w-full rounded-md bg-[#2563EB] hover:bg-[#1D4ED8] disabled:opacity-50 text-white font-semibold py-3 transition-colors; }
+.secondary { @apply w-full rounded-md border border-[#2563EB]/60 bg-[#2563EB]/10 hover:bg-[#2563EB]/20 disabled:opacity-50 text-blue-200 font-medium py-2.5 transition-colors; }

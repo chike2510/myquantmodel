@@ -62,6 +62,14 @@ export async function fetchQuote(symbol) {
   };
 }
 
+export async function fetchCrossMarketQuotes(symbols) {
+  const query = encodeURIComponent(symbols.join(','));
+  const res = await fetch(`${BASE_URL}?action=quotes&symbols=${query}`);
+  const data = await res.json();
+  if (!res.ok || data.error) throw new Error(data.error || 'Cross-market quotes unavailable');
+  return data.quotes || [];
+}
+
 // Symbol registry matching the competition's primary/secondary market list.
 // NAS100/US30/GER30 CFD tickers vary a lot by data vendor — verify these against
 // your Twelve Data plan before relying on them; some index CFDs are premium-tier only.

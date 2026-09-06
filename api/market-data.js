@@ -6,9 +6,18 @@ export default async function handler(req, res) {
   if (req.method !== 'GET') return res.status(405).json({ error: 'GET only' });
   if (!API_KEY) return res.status(500).json({ error: 'TWELVEDATA_API_KEY is not configured' });
 
-  const { action, symbol, interval, outputsize = '300' } = req.query || {};
+  const { action, symbol, symbols, interval, outputsize = '300' } = req.query || {};
+  if (action === 'quotes') {
+    const list = String(symbols || '').split(',').map(s => s.trim()).filter(Boolean).slice(0, 6);
+    if (!list.length) return res.status(400).json({ error: 'Provide comma-separated symbols' });
+    const quotes = await Promise.all(list.map(async item => {
+      const response = await fetch(`${BASE_URL}/quote?${new URLSearchParams({ symbol: item, apikey: API_KEY })}`);
+      return response.json();
+    }));
+    return res.status(200).json({ quotes });
+  }
   if (!symbol || !['candles', 'quote'].includes(action)) {
-    return res.status(400).json({ error: 'Use action=candles or action=quote and provide symbol' });
+    return res.status(400).json({ error: 'Use action=candles, quote, or quotes and provide symbol(s)' });
   }
 
   const endpoint = action === 'candles' ? 'time_series' : 'quote';
