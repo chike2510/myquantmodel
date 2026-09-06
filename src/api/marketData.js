@@ -3,8 +3,7 @@
 // Symbol mapping: Twelve Data uses e.g. "XAU/USD", "EUR/USD"; index CFDs vary by broker feed
 // availability on free tier — NAS100/US30/GER30 may need a different provider (see README).
 
-const BASE_URL = 'https://api.twelvedata.com';
-const API_KEY = import.meta.env.VITE_TWELVEDATA_API_KEY;
+const BASE_URL = '/api/market-data';
 
 const INTERVAL_MAP = {
   '4H': '4h',
@@ -14,13 +13,10 @@ const INTERVAL_MAP = {
 };
 
 export async function fetchCandles(symbol, timeframe, outputsize = 300) {
-  if (!API_KEY) {
-    throw new Error('VITE_TWELVEDATA_API_KEY is not set. Add it to your .env file.');
-  }
   const interval = INTERVAL_MAP[timeframe];
   if (!interval) throw new Error(`Unsupported timeframe: ${timeframe}`);
 
-  const url = `${BASE_URL}/time_series?symbol=${encodeURIComponent(symbol)}&interval=${interval}&outputsize=${outputsize}&apikey=${API_KEY}`;
+  const url = `${BASE_URL}?action=candles&symbol=${encodeURIComponent(symbol)}&interval=${interval}&outputsize=${outputsize}`;
   const res = await fetch(url);
   const data = await res.json();
 
@@ -52,8 +48,7 @@ export async function fetchCandles(symbol, timeframe, outputsize = 300) {
 }
 
 export async function fetchQuote(symbol) {
-  if (!API_KEY) throw new Error('VITE_TWELVEDATA_API_KEY is not set.');
-  const url = `${BASE_URL}/quote?symbol=${encodeURIComponent(symbol)}&apikey=${API_KEY}`;
+  const url = `${BASE_URL}?action=quote&symbol=${encodeURIComponent(symbol)}`;
   const res = await fetch(url);
   const data = await res.json();
   if (data.status === 'error') throw new Error(`Twelve Data error: ${data.message}`);
