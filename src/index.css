@@ -12,3 +12,13 @@ button, input, select { min-height: 42px; }
 .control { min-height: 42px; }
 .primary { @apply w-full rounded-md bg-[#2563EB] hover:bg-[#1D4ED8] disabled:opacity-50 text-white font-semibold py-3 transition-colors; }
 .secondary { @apply w-full rounded-md border border-[#2563EB]/60 bg-[#2563EB]/10 hover:bg-[#2563EB]/20 disabled:opacity-50 text-blue-200 font-medium py-2.5 transition-colors; }
+.chat-shell { @apply rounded-2xl border border-[#1E2636] bg-[#0C111C] overflow-hidden shadow-2xl; }
+.chat-scroll { @apply min-h-[360px] max-h-[68vh] overflow-y-auto p-3 sm:p-6 space-y-4; }
+.chat-row { @apply flex w-full; }
+.assistant-bubble { @apply max-w-[92%] rounded-2xl rounded-tl-sm border border-[#1E2636] bg-[#111827] px-4 py-3 text-sm leading-relaxed text-[#D9DEE8]; }
+.user-bubble { @apply max-w-[86%] rounded-2xl rounded-tr-sm bg-[#2563EB] px-4 py-3 text-sm leading-relaxed text-white; }
+.chat-composer { @apply flex gap-2 border-t border-[#1E2636] bg-[#080C14] p-3; }
+.chat-input { @apply min-w-0 flex-1 rounded-xl border border-[#1E2636] bg-[#0C111C] px-4 py-3 text-sm text-white outline-none focus:border-[#2563EB]; }
+.chat-send { @apply w-auto min-w-[76px] px-4 py-2; }
+.context-drawer { @apply rounded-xl border border-[#1E2636] bg-[#0C111C] px-4 py-3 text-sm text-[#C4C9D4]; }
+.context-drawer summary { @apply cursor-pointer font-medium text-[#F0A500]; }
