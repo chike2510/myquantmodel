@@ -21,7 +21,7 @@ api/narrative.js             → Vercel serverless fn — Experiential Labs writ
 ```bash
 npm install
 cp .env.example .env
-# fill in VITE_TWELVEDATA_API_KEY and EXPERIENTIAL_API_KEY
+# fill in TWELVEDATA_API_KEY and EXPERIENTIAL_API_KEY
 npm run dev
 ```
 
