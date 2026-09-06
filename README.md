@@ -27,8 +27,10 @@ npm run dev
 
 Deploy to Vercel as-is — `/api/narrative.js` is picked up automatically as a serverless function.
 Set `VITE_TWELVEDATA_API_KEY` and the server-only `EXPERIENTIAL_API_KEY` in Vercel project settings.
-The narrative endpoint uses Experiential Labs' OpenAI-compatible gateway. Set
-`EXPERIENTIAL_MODEL` to a model or alias enabled in your workspace; the default is `gpt-4o-mini`.
+The Twelve Data variable must retain the `VITE_` prefix because the current browser-side data
+client reads it with `import.meta.env`. The narrative endpoint uses Experiential Labs' OpenAI-compatible
+gateway. Leave `EXPERIENTIAL_MODEL` blank to discover available models automatically, or set it to
+a specific model/alias enabled in your workspace.
 
 ## What's real vs. what you still need to wire up
 

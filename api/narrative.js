@@ -24,14 +24,32 @@ incomplete, say so plainly rather than papering over it. Output strict JSON with
 
   try {
     const baseUrl = (process.env.EXPERIENTIAL_BASE_URL || 'https://api.experientiallabs.ai/v1').replace(/\/$/, '');
+    const apiKey = process.env.EXPERIENTIAL_API_KEY;
+    if (!apiKey) throw new Error('EXPERIENTIAL_API_KEY is not configured');
+
+    let model = process.env.EXPERIENTIAL_MODEL;
+    if (!model) {
+      const modelsResponse = await fetch(`${baseUrl}/models`, {
+        headers: { Authorization: `Bearer ${apiKey}` },
+      });
+      const modelsData = await modelsResponse.json();
+      const models = (modelsData.data || []).map(item => item.id).filter(Boolean);
+      const preference = [
+        'opus', 'sonnet', 'gpt-5', 'gpt-4.1', 'gpt-4o', 'gemini-2.5-pro',
+        'gemini-2.0', 'flash', 'qwen', 'llama',
+      ];
+      model = preference.map(term => models.find(id => id.toLowerCase().includes(term))).find(Boolean) || models[0];
+    }
+    if (!model) throw new Error('No Experiential Labs models are available for this API key');
+
     const response = await fetch(`${baseUrl}/chat/completions`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.EXPERIENTIAL_API_KEY}`,
+        'Authorization': `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: process.env.EXPERIENTIAL_MODEL || 'gpt-4o-mini',
+        model,
         max_tokens: 800,
         response_format: { type: 'json_object' },
         messages: [
