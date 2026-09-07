@@ -71,12 +71,17 @@ export default function Dashboard() {
       const filter = applyTradeFilter({ setupScore, probability: probabilityInput, riskReward: rrInput, dataQuality, verified, regimeSupportsSetup, contradictionReasons, dailyPnLPct: dailyPnLPct / 100, planComplete });
       const { tier, risk } = riskTierFor(setupScore);
       const position = calculatePositionSize({ equity, riskPct: risk, stopDistancePips: stopDistance, pipValuePerLot });
-      let narrative = null;
+      const baseResult = { candles, fetchedAt, source, quote, ind, regime, setupScore, subscores, breakdown: scoreBreakdown(subscores), filter, tier, risk, position, narrative: null, plan, expectancy: expectancy(probabilityInput, rrInput), dataQuality, crossQuotes, calendar, news, backtest: backtestTrendSetups(candles), competition: classifyCompetitionState({ growthPct, leaderboardGapPct: top10Position ? Number(top10Position) : null }) };
+      setResult(baseResult);
+      setMessages(prev => [...prev, { role: 'assistant', text: 'The deterministic result is ready. I’m optionally adding the short qualitative explanation now.' }]);
       try {
-        const response = await fetch('/api/narrative', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ computed: { symbol, timeframe, regime, setupScore, decision: filter.decision, reasons: filter.reasons, probability: probabilityInput, riskReward: rrInput, indicators: ind, plan, direction, riskTier: tier, dataQuality }, macroContext: evidence.macro.note, crossMarketContext: evidence.crossMarket.note }) });
-        const data = await response.json(); narrative = data.narrative ?? null;
-      } catch { narrative = null; }
-      setResult({ candles, fetchedAt, source, quote, ind, regime, setupScore, subscores, breakdown: scoreBreakdown(subscores), filter, tier, risk, position, narrative, plan, expectancy: expectancy(probabilityInput, rrInput), dataQuality, crossQuotes, calendar, news, backtest: backtestTrendSetups(candles), competition: classifyCompetitionState({ growthPct, leaderboardGapPct: top10Position ? Number(top10Position) : null }) });
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 12000);
+        const response = await fetch('/api/narrative', { method: 'POST', signal: controller.signal, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ computed: { symbol, timeframe, regime, setupScore, decision: filter.decision, reasons: filter.reasons, probability: probabilityInput, riskReward: rrInput, indicators: ind, plan, direction, riskTier: tier, dataQuality }, macroContext: evidence.macro.note, crossMarketContext: evidence.crossMarket.note }) });
+        clearTimeout(timeout);
+        const data = await response.json();
+        if (data.narrative) setResult(prev => prev ? { ...prev, narrative: data.narrative } : prev);
+      } catch { /* Narrative is optional; the deterministic report remains visible. */ }
     } catch (e) { setError(String(e.message || e)); }
     finally { setLoading(false); }
   }

@@ -50,32 +50,26 @@ export default function LiveChart({ candles, indicators, plan, height = 420 }) {
   }, [height]);
 
   useEffect(() => {
-    if (!seriesRef.current || !candles?.length) return;
-    const formatted = candles.map(c => ({
-      time: Math.floor(new Date(c.time).getTime() / 1000),
-      open: c.open,
-      high: c.high,
-      low: c.low,
-      close: c.close,
-    }));
-    seriesRef.current.setData(formatted);
-    overlaysRef.current.forEach(s => chartRef.current.removeSeries(s));
-    overlaysRef.current = [];
-    const addLine = (value, color, title) => {
-      if (!Number.isFinite(value)) return;
-      const line = chartRef.current.addSeries(LineSeries, { color, lineWidth: 1, lineStyle: 2, title, priceLineVisible: true, lastValueVisible: true });
-      line.setData(formatted.map(c => ({ time: c.time, value })));
-      overlaysRef.current.push(line);
-    };
-    addLine(indicators?.ema20, '#60A5FA', 'EMA20');
-    addLine(indicators?.ema50, '#A78BFA', 'EMA50');
-    addLine(indicators?.ema200, '#F472B6', 'EMA200');
-    addLine(indicators?.vwap, '#34D399', 'VWAP');
-    addLine(plan?.entry, '#F8FAFC', 'ENTRY');
-    addLine(plan?.stop, '#EF4444', 'STOP');
-    addLine(plan?.target1, '#22C55E', 'T1');
-    addLine(plan?.target2, '#16A34A', 'T2');
-    chartRef.current.timeScale().fitContent();
+    if (!seriesRef.current || !chartRef.current || !candles?.length) return;
+    try {
+      const formatted = candles.map(c => ({
+        time: Math.floor(new Date(c.time).getTime() / 1000),
+        open: Number(c.open), high: Number(c.high), low: Number(c.low), close: Number(c.close),
+      })).filter(c => Number.isFinite(c.time) && [c.open, c.high, c.low, c.close].every(Number.isFinite));
+      seriesRef.current.setData(formatted);
+      overlaysRef.current.forEach(s => chartRef.current.removeSeries(s));
+      overlaysRef.current = [];
+      const addLine = (value, color, title) => {
+        if (!Number.isFinite(value)) return;
+        const line = chartRef.current.addSeries(LineSeries, { color, lineWidth: 1, lineStyle: 2, title, priceLineVisible: true, lastValueVisible: true });
+        line.setData(formatted.map(c => ({ time: c.time, value })));
+        overlaysRef.current.push(line);
+      };
+      addLine(indicators?.ema20, '#60A5FA', 'EMA20'); addLine(indicators?.ema50, '#A78BFA', 'EMA50'); addLine(indicators?.ema200, '#F472B6', 'EMA200'); addLine(indicators?.vwap, '#34D399', 'VWAP'); addLine(plan?.entry, '#F8FAFC', 'ENTRY'); addLine(plan?.stop, '#EF4444', 'STOP'); addLine(plan?.target1, '#22C55E', 'T1'); addLine(plan?.target2, '#16A34A', 'T2');
+      chartRef.current.timeScale().fitContent();
+    } catch (error) {
+      console.warn('Chart overlay render skipped:', error);
+    }
   }, [candles, indicators, plan]);
 
   return <div><div className="flex flex-wrap gap-3 text-[10px] text-[#8A93A6] py-2"><span className="text-blue-300">EMA20</span><span className="text-violet-300">EMA50</span><span className="text-pink-300">EMA200</span><span className="text-emerald-300">VWAP</span><span className="text-white">ENTRY</span><span className="text-red-400">STOP</span><span className="text-green-400">TARGETS</span></div><div ref={containerRef} className="w-full rounded-lg overflow-hidden border border-[#1E2636]" /></div>;
