@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { createChart, ColorType, LineSeries } from 'lightweight-charts';
+import { createChart, ColorType, CandlestickSeries, LineSeries } from 'lightweight-charts';
 
 export default function LiveChart({ candles, indicators, plan, height = 420 }) {
   const containerRef = useRef(null);
@@ -26,7 +26,7 @@ export default function LiveChart({ candles, indicators, plan, height = 420 }) {
       crosshair: { mode: 0 },
     });
 
-    const series = chart.addCandlestickSeries({
+    const series = chart.addSeries(CandlestickSeries, {
       upColor: '#2563EB',
       downColor: '#F0A500',
       borderVisible: false,
@@ -46,6 +46,8 @@ export default function LiveChart({ candles, indicators, plan, height = 420 }) {
     return () => {
       window.removeEventListener('resize', handleResize);
       chart.remove();
+      chartRef.current = null;
+      seriesRef.current = null;
     };
   }, [height]);
 
